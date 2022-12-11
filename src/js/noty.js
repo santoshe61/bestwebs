@@ -1,9 +1,12 @@
-let container = document.createElement("div");
-container.className = "bwnoty bwnoty__container";
-
-document.getElementsByTagName("body")[0].appendChild(container);
+let container;
 
 function addNoty(type, message, config) {
+	if (!(container = document.querySelector(".bwnoty.bwnoty__container"))) {
+		container = document.createElement("div");
+		container.className = "bwnoty bwnoty__container";
+		document.getElementsByTagName("body")[0].appendChild(container);
+	}
+
 	let removeTimeout;
 	let item = document.createElement("div");
 	item.className = `bwnoty__item bwnoty--${type}`;
@@ -56,6 +59,9 @@ export default function noty(type, message, config) {
 		config = message || {};
 		message = type.message;
 		type = type.type;
+	} else if (message === undefined) {
+		message = type;
+		type = "warning";
 	}
 	config = {
 		timeout: 10,

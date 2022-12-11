@@ -14,7 +14,7 @@ function handleResponse(meta) {
 	dispatchEvent("bw:loading", false);
 	if (meta?.message) dispatchEvent("bw:alert", { status: meta.status || "warning", message: meta.message });
 	if (meta?.redirect) dispatchEvent("bw:redirect", meta.redirect);
-	if (meta?.callback) window?.[meta.callback]?.();
+	if (meta?.callback) globalThis?.[meta.callback]?.();
 }
 function dispatchEvent(type, detail) {
 	window.dispatchEvent(new CustomEvent(type, { detail }));
@@ -96,15 +96,20 @@ export function useXHR(url, options) {
 
 export function $http(url, options) {
 	dispatchEvent("bw:loading", true);
-	const authUser = auth();
 	options.headers = {
 		// Accept: "application/json",
 		"Content-Type": options.body instanceof HTMLElement ? "multipart/form-data" : 'application/json', //, application/x-www-form-urlencoded, text/plain
 		pragma: "no-cache",
 		"cache-control": "no-cache",
-		Authorization: authUser?.Token || "",
 		...(options?.headers || {})
 	}
+	for (const key in options.headers) {
+		if (Object.hasOwnProperty.call(options.headers, key) && options.headers[key] === null) {
+			delete options.headers[key];
+		}
+	}
+	const authUser = auth();
+	if (!options.noAuth && authUser) options.headers.Authorization = authUser?.Token || "";
 	if (options.query && typeof options.query === "object") {
 		url += (url.includes("?") ? "&" : "?") + new URLSearchParams(options.query);
 	}
@@ -117,18 +122,13 @@ export function $http(url, options) {
 	} else if (typeof options.body === "object") options.body = JSON.stringify(options.body);
 	return (!window?.fetch || options.xhr ? useXHR(url, options) : useFetch(url, options))
 		.catch((error) => {
-			// dispatchEvent("bw:alert", {
-			// 	error,
-			// 	status: error.status || "error",
-			// 	message: error.message || "Unable to complete network request",
-			// });
-			// dispatchEvent("bw:loading", false);
 			handleResponse(error?.meta || error);
-			throw new Error(error);
+			// console.log(error)
+			throw error;
 		})
 		.then((res) => {
 			handleResponse(res?.meta);
-			if (res.status >= 400) throw new Error(res);
+			if (res.status >= 400) throw res;
 			return res;
 		});
 }

@@ -1,4 +1,4 @@
-export default function (callback, wait = 500) {
+export default function throttle(callback, wait = 500) {
 	let last = 0;
 	return function (...args) {
 		const now = new Date().getTime();

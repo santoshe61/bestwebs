@@ -1,5 +1,5 @@
-import noty from "./noty";
-import loader from "./loader";
+import noty from "./noty.js";
+import loader from "./loader.js";
 
 /**
 * capture below events on wondow
@@ -10,7 +10,7 @@ import loader from "./loader";
 */
 function events(router, store) {
 	window.addEventListener("bw:alert", function ({ detail }) {
-		console.log(detail);
+		// console.log(detail);
 		noty(detail.status, detail.message, { title: detail.title });
 	});
 	if (router) {
@@ -18,16 +18,17 @@ function events(router, store) {
 			router.push(detail);
 		});
 	}
-	if (store) {
-		window.addEventListener("bw:loading", function ({ detail }) {
-			loader(detail);
+	window.addEventListener("bw:loading", function ({ detail }) {
+		// console.log(detail)
+		loader(detail);
+		if (store) {
 			if (store._isOptionsAPI === undefined) {
 				store.dispatch("loading", detail);
 			} else {
 				store?.loading?.(detail);
 			}
-		});
-	}
+		}
+	});
 }
 
 export default events;

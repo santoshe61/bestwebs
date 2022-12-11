@@ -1,4 +1,5 @@
 export const required = (v) => {
+	// console.log(v)
 	// Start - Code to use required as function like required(true) or required(false)
 	if (v === true)
 		return (d) =>
@@ -32,6 +33,12 @@ export const mobile = (v) =>
 		? true
 		: /^[6-9][0-9]{9}$/.test(v) ||
 		"This should be valid 10 digit mobile number without country code";
+
+export const phone = (v) =>
+	!v
+		? true
+		: /^[0-9][1-9][0-9]{7,13}$/.test(v) ||
+		"This should be valid landline or mobile number with std code";
 export const username = (v) =>
 	!v
 		? true
@@ -73,10 +80,10 @@ export const maxLength = (limit) => (v) =>
 		: true;
 
 export const min = (limit) => (v) =>
-	v ? v >= limit || `This should be ${limit} or more ` : true;
+	(v ?? 1) ? v >= limit || `This should be ${limit} or more ` : true;
 
 export const max = (limit) => (v) =>
-	v ? v <= limit || `This should be ${limit} or less ` : true;
+	(v ?? 1) ? v <= limit || `This should be ${limit} or less ` : true;
 
 export const custom =
 	(regex, msg = "Invalid value provided") =>
@@ -84,7 +91,7 @@ export const custom =
 			v ? new RegExp(regex).test(v) || msg : true;
 
 export const number = (min, max) => (v) => {
-	if (v === "" || v === undefined) return true;
+	if (!v && v !== 0) return true;
 	let minimum = parseFloat(min);
 	let maximum = parseFloat(max);
 	v = parseFloat(v);
@@ -94,14 +101,14 @@ export const number = (min, max) => (v) => {
 	);
 };
 
-export const text = (minimumLength, maximumLength, pattern = /^[0-9a-zA-Z\s!@#$%*()-+_='":,.<>?/]+$/) => (v) => {
+export const text = (minimumLength, maximumLength, pattern = /(.*)+$/ig) => (v) => {
 	minimumLength = parseInt(minimumLength);
 	maximumLength = parseInt(maximumLength);
 	return v
 		? (pattern.test(v) &&
 			`${v}`.trim().length >= minimumLength &&
 			`${v}`.trim().length <= maximumLength) ||
-		`Should be ${minimumLength} to ${maximumLength} chars and must not contain [&] or Invalid characters`
+		`Should be a text of ${minimumLength} to ${maximumLength} chars, no special characters`
 		: true;
 };
 
@@ -111,9 +118,6 @@ export const match = (existing) => (v) =>
 export const alphaFirst = (v) =>
 	!v ? true : !/^[0-9](.*)+$/.test(v) || "Fist letter can not be a number";
 
-export const lpad = (num, prefix = "", places = 6) => {
-	return prefix + String(num).padStart(places, "0");
-};
 
 export const filecount =
 	(min = 1, max = 1) =>
@@ -122,5 +126,9 @@ export const filecount =
 			return true;
 		};
 
+// helpers
+export const lpad = (num, prefix = "", places = 6) => {
+	return prefix + String(num).padStart(places, "0");
+};
 
-export default { required, email, mobile, username, gstin, pan, aadhar, ifsc, minLength, maxLength, min, max, custom, number, text, match, alphaFirst, lpad, filecount, upi };
+export default { required, email, mobile, username, gstin, pan, aadhar, ifsc, minLength, maxLength, min, max, custom, number, text, match, alphaFirst, lpad, filecount, upi, phone };
