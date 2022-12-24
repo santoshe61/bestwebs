@@ -35,7 +35,11 @@ class date extends Date {
 		return this;
 	}
 	diff(date2) {
-		return (this._date - new Date(date2)) / (3600000 * 24);
+		if (date2) {
+			return (this._date - new Date(date2)) / (3600000 * 24);
+		} else {
+			return (this._date - new Date()) / (3600000 * 24);
+		}
 	}
 }
 

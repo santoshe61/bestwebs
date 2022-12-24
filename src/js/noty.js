@@ -58,6 +58,7 @@ export default function noty(type, message, config) {
 	if (typeof type === 'object') {
 		config = message || {};
 		message = type.message;
+		config.title = config.title || type.title;
 		type = type.type;
 	} else if (message === undefined) {
 		message = type;
@@ -67,6 +68,7 @@ export default function noty(type, message, config) {
 		timeout: 10,
 		...config
 	}
+	message = message.replaceAll(/[_\`]+/gi, " ");
 	addNoty(type, message, config);
 }
 

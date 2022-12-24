@@ -1,3 +1,12 @@
+/*
+Carefull  things-
+1. FALSY VALUES =>  0, '',  NaN, null, undefined,  false
+2. +undefined = parseInt(undefined) = NaN
+3. parseInt(null) = NaN <--- BUT --->  +null = 0
+4. parseInt(false) = NaN <--- BUT ---> +false = 0
+5. parseInt(Infinity) = NaN <--- BUT ---> +Infinity = Infinity
+6. parseInt('123dsadf') = 123 <--- BUT ---> +'123dsadf' = NaN
+*/
 export const required = (v) => {
 	// console.log(v)
 	// Start - Code to use required as function like required(true) or required(false)
@@ -6,15 +15,11 @@ export const required = (v) => {
 			(d !== "" && d !== undefined && d !== null) || "This field is required";
 	else if (v === false) return () => true;
 	// END
-	try {
-		if (typeof v === "number") v = `${v}`;
-		else v = v.trim();
-	} catch (e) {
-		return "This field is required";
-	}
-	return (
-		(v !== "" && v !== undefined && v !== null) || "This field is required"
-	);
+	else if (v === undefined || v === null) return "This field is required";
+	else if (typeof v === "number" || typeof v === "string") !!`${v}`.trim().length || "This field is required";
+	else if (v instanceof Map || v instanceof Set) return !!v.size || "This field is required";
+	else if (typeof v === "object") return !!Object.values(v).length || "This field is required";
+	else return !!v || "This field is required"
 };
 
 export const email = (v) =>
@@ -26,7 +31,7 @@ export const email = (v) =>
 export const upi = (v) =>
 	!v
 		? true
-		: /^[0-9a-zA-Z_-]+@[0-9a-zA-Z]+$/.test(v) ||
+		: /^[0-9a-zA-Z_-]+@[0-9a-zA-Z]{3,10}$/.test(v) ||
 		"This should be valid UPI address";
 export const mobile = (v) =>
 	!v
@@ -71,19 +76,19 @@ export const ifsc = (v) =>
 
 export const minLength = (limit) => (v) =>
 	v
-		? v.length >= limit || `This field requires ${limit} or more characters`
+		? v.length >= limit || `Requires ${limit} or more characters`
 		: true;
 
 export const maxLength = (limit) => (v) =>
 	v
-		? v.length <= limit || `This field requires ${limit} or less characters`
+		? v.length <= limit || `Requires ${limit} or less characters`
 		: true;
 
 export const min = (limit) => (v) =>
-	(v ?? 1) ? v >= limit || `This should be ${limit} or more ` : true;
+	(v || v === 0) ? +v >= limit || `Should be ${limit} or more ` : true;
 
 export const max = (limit) => (v) =>
-	(v ?? 1) ? v <= limit || `This should be ${limit} or less ` : true;
+	(v || v === 0) ? +v <= limit || `Should be ${limit} or less ` : true;
 
 export const custom =
 	(regex, msg = "Invalid value provided") =>
@@ -92,12 +97,14 @@ export const custom =
 
 export const number = (min, max) => (v) => {
 	if (!v && v !== 0) return true;
-	let minimum = parseFloat(min);
-	let maximum = parseFloat(max);
 	v = parseFloat(v);
-	return (
-		(v >= minimum && v <= maximum) ||
-		`This should be a number between ${min} and ${max}`
+	if (parseFloat(max) || max === 0) return (
+		(v >= parseFloat(min) && v <= parseFloat(max)) ||
+		`Should be a number between ${min} and ${max}`
+	);
+	else return (
+		(v >= parseFloat(min)) ||
+		`Should be ${min} or more `
 	);
 };
 

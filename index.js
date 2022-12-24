@@ -1,6 +1,7 @@
 // stylesheet
 if (globalThis.window) {
 	import("./src/style.css");
+	import("./src/utils/custom-scripts.js").then((script) => script.default());
 }
 
 // core js
@@ -25,6 +26,8 @@ export { default as hour2String } from "./src/js/hour2String.js";
 export { default as number2String } from "./src/js/number2String.js";
 export { default as rearrange } from "./src/js/rearrange.js";
 export { default as date } from "./src/js/date.js";
+export { default as image } from "./src/js/image.js";
+export { default as size } from "./src/js/size.js";
 
 // vue js
 export { default as directives } from "./src/vue/directives.js";

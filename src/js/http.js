@@ -14,10 +14,11 @@ function handleResponse(meta) {
 	dispatchEvent("bw:loading", false);
 	if (meta?.message) dispatchEvent("bw:alert", { status: meta.status || "warning", message: meta.message });
 	if (meta?.redirect) dispatchEvent("bw:redirect", meta.redirect);
+	if (meta?.console) console.log("%cFROM SERVER ", "color:red;", ...(meta.console instanceof Array ? meta.console : [meta.console]));
 	if (meta?.callback) globalThis?.[meta.callback]?.();
 }
 function dispatchEvent(type, detail) {
-	window.dispatchEvent(new CustomEvent(type, { detail }));
+	globalThis.dispatchEvent(new CustomEvent(type, { detail }));
 }
 /**
 * make fetch request
@@ -40,7 +41,7 @@ export function useFetch(url, options) {
 		// body: dataObjOrForm instanceof HTMLElement ? new FormData() : , // body data type must match "Content-Type" header
 		...options,
 	};
-	const customFetch = fetch.bind(window);
+	const customFetch = fetch.bind(globalThis);
 	const controller = new AbortController();
 	options.signal = controller.signal;
 	customFetch.abort = () => controller.abort();
@@ -110,9 +111,16 @@ export function $http(url, options) {
 	}
 	const authUser = auth();
 	if (!options.noAuth && authUser) options.headers.Authorization = authUser?.Token || "";
+	console.log(options.query)
+	if (options.query?.where && typeof options.query.where === "object") {
+		url += (url.includes("?") ? "&where=" : "?where=") + encodeURI(JSON.stringify(options.query.where));
+		delete options.query.where;
+	}
 	if (options.query && typeof options.query === "object") {
 		url += (url.includes("?") ? "&" : "?") + new URLSearchParams(options.query);
 	}
+	delete options.query;
+	delete options.where;
 	if (options.body instanceof HTMLElement) {
 		options.body = new FormData(options.body);
 		if (options.body.get("password")) {
@@ -120,7 +128,7 @@ export function $http(url, options) {
 		}
 		if (options.body.get("cpassword")) options.body.delete("cpassword");
 	} else if (typeof options.body === "object") options.body = JSON.stringify(options.body);
-	return (!window?.fetch || options.xhr ? useXHR(url, options) : useFetch(url, options))
+	return (!globalThis?.fetch || options.xhr ? useXHR(url, options) : useFetch(url, options))
 		.catch((error) => {
 			handleResponse(error?.meta || error);
 			// console.log(error)
