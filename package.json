@@ -1,6 +1,6 @@
 {
   "name": "bestwebs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "bestwebs is a helper, wrapper functions library",
   "main": "index.js",
   "scripts": {

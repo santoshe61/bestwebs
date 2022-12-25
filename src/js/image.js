@@ -1,5 +1,5 @@
 export function resize(file, config) {
-	config = { maxWidth: 640, maxHeight: 640, quality: 0.9, ...config }
+	config = { maxWidth: 1000, maxHeight: 1000, quality: 0.8, ...config }
 	return new Promise((resolve, reject) => {
 		const canvas = document.createElement("canvas");
 		const ctx = canvas.getContext("2d");
@@ -29,6 +29,17 @@ export function resize(file, config) {
 
 			// scale & draw the image onto the canvas
 			ctx.drawImage(img, 0, 0, width, height);
+			if (config.text) {
+				if (typeof config.text === 'string') {
+					ctx.font = "30px Arial";
+					ctx.fillText(config.text, 10, 10);
+				} else if (typeof config.text === 'function') {
+					config.text.apply(ctx, ctx);
+				} else {
+					ctx.font = config.text.font;
+					ctx.fillText(config.text.text, 10, 10);
+				}
+			}
 
 			// just to preview
 			//   document.body.appendChild(canvas);

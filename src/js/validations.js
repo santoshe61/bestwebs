@@ -15,11 +15,11 @@ export const required = (v) => {
 			(d !== "" && d !== undefined && d !== null) || "This field is required";
 	else if (v === false) return () => true;
 	// END
-	else if (v === undefined || v === null) return "This field is required";
+	else if (v === undefined || v === null || (v !== 0 && !v)) return "This field is required";
 	else if (typeof v === "number" || typeof v === "string") !!`${v}`.trim().length || "This field is required";
 	else if (v instanceof Map || v instanceof Set) return !!v.size || "This field is required";
 	else if (typeof v === "object") return !!Object.values(v).length || "This field is required";
-	else return !!v || "This field is required"
+	else return !v || "This field is required"
 };
 
 export const email = (v) =>
