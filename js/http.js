@@ -27,10 +27,12 @@ function dispatchEvent(type, detail) {
 * @return {Promise} fetchedRequest
 */
 export function useFetch(url, options) {
+	const controller = new AbortController();
+	options.signal = controller.signal;
+	options.abort = () => controller.abort();
 	options = {
 		// non fetch props
 		type: "json",
-
 		// fetch related props
 		// method: "POST", // *GET, POST, PUT, DELETE, etc.
 		mode: "cors", // no-cors, *cors, same-origin
@@ -41,11 +43,7 @@ export function useFetch(url, options) {
 		// body: dataObjOrForm instanceof HTMLElement ? new FormData() : , // body data type must match "Content-Type" header
 		...options,
 	};
-	const customFetch = fetch.bind(globalThis);
-	const controller = new AbortController();
-	options.signal = controller.signal;
-	customFetch.abort = () => controller.abort();
-	return customFetch(url, options).then(async (res) => {
+	return fetch(url, options).then(async (res) => {
 		let output = {
 			status: res.status,
 			ok: res.ok,
@@ -58,40 +56,39 @@ export function useFetch(url, options) {
 }
 
 export function useXHR(url, options) {
-	const req = new XMLHttpRequest();
+	const XHRReq = new XMLHttpRequest();
+	options.abort = () => XHRReq.abort();
 	return new Promise((resolve, reject) => {
-		req.open(options.method, url, true);
+		XHRReq.open(options.method, url, true);
 		if (options.headers) {
 			Object.entries(options.headers).forEach(([key, value]) => {
-				req.setRequestHeader(key, value)
+				XHRReq.setRequestHeader(key, value)
 			});
 		}
-		if (options.type == "json") req.responseType = 'json';
-		req.onload = function () {
-			req.body = req.response;
-			if (req.status >= 400) {
-				reject(req);
-			} else resolve(req);
+		if (options.type == "json") XHRReq.responseType = 'json';
+		XHRReq.onload = function () {
+			XHRReq.body = XHRReq.response;
+			if (XHRReq.status >= 400) {
+				reject(XHRReq);
+			} else resolve(XHRReq);
 		}
-		req.onerror = function () {
-			req.body = req.response;
-			reject(req);
+		XHRReq.onerror = function () {
+			XHRReq.body = XHRReq.response;
+			reject(XHRReq);
 		}
 
-		if (options.upload) {
-			req.setRequestHeader("Content-Type", "application/octet-stream");
-			req.upload.addEventListener("progress", (event) => {
-				// if (event.lengthComputable) options.upload(event.loaded, event.total);
-				options.upload(event.loaded, event.total);
+		if (options.onprogress) {
+			// XHRReq.setRequestHeader("Content-Type", "application/octet-stream");
+			XHRReq.upload.addEventListener("progress", (event) => {
+				if (event.lengthComputable) return options.onprogress({ loaded: event.loaded, total: event.total, progress: event.loaded / event.total, type: "upload" });
+				options.onprogress({ loaded: 0, total: 1, progress: 1, type: "upload" });
+			});
+			XHRReq.addEventListener("progress", (event) => {
+				if (event.lengthComputable) return options.download({ loaded: event.loaded, total: event.total, progress: event.loaded / event.total, type: "download" });
+				options.download({ loaded: 0, total: 1, progress: 1, type: "download" });
 			});
 		}
-		if (options.download) {
-			req.addEventListener("progress", (event) => {
-				// if (event.lengthComputable) options.download(event.loaded, event.total);
-				options.download(event.loaded, event.total);
-			});
-		}
-		req.send(options.body);
+		XHRReq.send(options.body);
 	});
 }
 
@@ -140,7 +137,7 @@ export function $http(url, options) {
 			return res;
 		});
 }
-
+globalThis.$http = $http;
 export const debouncedHTTP = debounce($http);
 
 export default {
@@ -148,30 +145,22 @@ export default {
 		return $http(url, options)
 	},
 	delete(url, options = {}) {
-		return $http(url, {
-			method: "DELETE",
-			...options
-		})
+		options.method = "DELETE";
+		return $http(url, options);
 	},
 	post(url, body, options = {}) {
-		return $http(url, {
-			method: "POST",
-			body,
-			...options
-		})
+		options.method = "POST";
+		options.body = body;
+		return $http(url, options);
 	},
 	put(url, body, options = {}) {
-		return $http(url, {
-			method: "PUT",
-			body,
-			...options
-		})
+		options.method = "PUT";
+		options.body = body;
+		return $http(url, options);
 	},
 	patch(url, body, options = {}) {
-		return $http(url, {
-			method: "PATCH",
-			body,
-			...options
-		})
+		options.method = "PATCH";
+		options.body = body;
+		return $http(url, options);
 	},
 };

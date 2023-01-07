@@ -306,6 +306,7 @@ bw Note
 	content:"\FF05";
 	font-size: 1rem;
 }
+.inr::before,
 .rupee::before{
 	content:"\20B9";
 	font-size: 1rem;

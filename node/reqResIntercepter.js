@@ -1,5 +1,5 @@
 
-module.exports = function (req, res, next) {
+export default function (req, res, next) {
 	req.meta = req.body.meta;
 	delete req.body.meta;
 	let originaljson = res.json;
