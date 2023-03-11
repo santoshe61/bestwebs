@@ -115,29 +115,24 @@
 	background-color: var(--bw-secondary);
 	color: var(--bw-light);
 	}
-
 	.bwnoty .bwnoty__item:hover {
 	opacity: 0.9;
 	box-shadow: 0 0 2px 2px var(--bw-shadow);
 	}
-
 	.bwnoty .bwnoty__item.bwnoty__item-freezed {
 	border: 2px dashed var(--bw-shadow);
 	}
-
 	.bwnoty .bwnoty__item__title {
 	max-width: 95%;
 	color: inherit;
 	margin-bottom: 5px;
 	font-size: 1.2rem;
 	}
-
 	.bwnoty .bwnoty__item__message {
 	color: inherit;
 	font-size: 1rem;
 	margin: 0;
 	}
-
 	.bwnoty .bwnoty__item__close-button {
 	background-color: transparent;
 	color: inherit;
@@ -148,7 +143,6 @@
 	padding: 0px 6px;
 	font-size: 18px;
 	}
-
 	.bwnoty .bwnoty__item__close-button:hover {
 	border-radius: 50%;
 	background-color: red;
@@ -304,14 +298,14 @@ bw Note
 */
 .percent::before{
 	content:"\FF05";
-	font-size: 1rem;
+	font-size: 1em;
 }
 .inr::before,
 .rupee::before{
 	content:"\20B9";
-	font-size: 1rem;
+	font-size: 1em;
 }
 .usd::before{
 	content:"\FF04";
-	font-size: 1rem;
+	font-size: 1em;
 }

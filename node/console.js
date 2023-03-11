@@ -9,7 +9,7 @@ import path from 'path';
 		Error.prepareStackTrace = originalPrepareStackTrace;
 		const relativeFileName = path.relative(process.cwd(), callee.getFileName());
 		// escape characters like below
-		originalLoggingMethod(`\x1b[33m ${relativeFileName}:\x1b[31m${callee.getLineNumber()}\x1b[0m->`, ...Arguments);
+		originalLoggingMethod(`\n\x1b[33m ${relativeFileName}:\x1b[31m${callee.getLineNumber()}\x1b[0m-> `, ...Arguments);
 	};
 });
 

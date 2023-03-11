@@ -5,7 +5,8 @@ class date extends Date {
 	}
 	format(requiredFormat) {
 		if (requiredFormat == "DD/MM/YYYY") return super.toLocaleDateString("en-IN");
-		return super.toLocaleDateString('en-CA');
+		return super.toJSON().slice(0, 10);
+		// return super.toLocaleDateString('en-CA');
 
 	}
 	after(duration, key) {

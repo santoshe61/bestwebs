@@ -29,6 +29,7 @@ export { default as date } from "./js/date.js";
 export { default as image } from "./js/image.js";
 export { default as size } from "./js/size.js";
 export { default as text } from "./js/text.js";
+export { default as waitFor } from "./js/waitFor.js";
 
 // node js
 

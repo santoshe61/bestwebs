@@ -108,6 +108,21 @@ export const number = (min, max) => (v) => {
 	);
 };
 
+export const date = (min, max) => (v) => {
+	if (!v && v !== 0) return true;
+	try {
+		v = new Date(v);
+		if (min) min = new Date(min);
+		if (max) max = new Date(max);
+	} catch (e) {
+		console.log(e);
+		return `Should be a valid date`;
+	}
+	if (max && v > max) return "Should be less than or equal to " + max.toLocaleDateString();
+	if (min && v < min) return "Should be more than or equal to " + min.toLocaleDateString();
+	else return true;
+};
+
 export const text = (minimumLength, maximumLength, pattern = /(.*)+$/ig) => (v) => {
 	minimumLength = parseInt(minimumLength);
 	maximumLength = parseInt(maximumLength);
@@ -115,7 +130,7 @@ export const text = (minimumLength, maximumLength, pattern = /(.*)+$/ig) => (v) 
 		? (pattern.test(v) &&
 			`${v}`.trim().length >= minimumLength &&
 			`${v}`.trim().length <= maximumLength) ||
-		`Should be a text of ${minimumLength} to ${maximumLength} chars, no special characters`
+		`Should be a text of ${minimumLength} to ${maximumLength} chars, limited special characters`
 		: true;
 };
 

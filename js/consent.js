@@ -1,7 +1,7 @@
 import storage from "./storage.js";
 export default function consentModal(config = {
-	message: "We use cookies and other tracking/storage technologies to improve your browsing experience, By using our application, you consent to our use of these technologies.",
-	button: "Accept",
+	message: "We use cookies and other similar technologies to improve your browsing experience, By using our application, you consent to our use of these technologies, Due to technical limitations, we will not be able to serve without any of them.",
+	button: "Consent",
 	tnc: "https://en.wikipedia.org/wiki/HTTP_cookie",
 	type: "cookie-consent"
 }) {
